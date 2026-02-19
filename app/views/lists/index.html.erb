@@ -1,0 +1,17 @@
+<div class="navbar d-flex justify-content-between">
+  <i class="fa-solid fa-film"></i>
+  <div class="btn btn-primary text-dark rounded pe-4">
+  <%= link_to "Create a list", new_list_path%>
+  </div>
+</div>
+
+<div class="container">
+  <ul>
+    <% @lists.each do |list| %>
+      <li><%= link_to list.name, list_path(list) %></li>
+      <%= link_to "Add Bookmark", new_list_bookmark_path(list)%>
+    <% end %>
+  </ul>
+
+  <%= link_to "Create a list", new_list_path%>
+</div>
