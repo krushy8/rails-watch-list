@@ -1,14 +1,28 @@
-<h2><%= @list.name %></h2>
+<div class="navbar d-flex justify-content-between align-items-center px-3">
+  <i class="fa-solid fa-film"></i>
+  <%= link_to "Create a list", new_list_path, class: "btn btn-primary" %>
+</div>
 
-<ul>
-  <% @list.bookmarks.each do |bookmark| %>
-    <li>
-      <%= bookmark.movie.title %> - <%= bookmark.movie.overview %> - <%= bookmark.comment %>
-    </li>
-    <%= link_to "Delete",
-        list_bookmark_path(@list, bookmark),
-        data: { turbo_method: :delete, turbo_confirm: "Delete this bookmark?" } %>
-  <% end %>
-</ul>
+<div class="container">
+  <h2><%= @list.name %></h2>
 
-<%= link_to "Back to lists", lists_path %>
+<%# <%= cl_image_tag @link.photo.key, height: 300, width: 400, crop: :fill %>
+
+  <ul>
+    <% @list.bookmarks.each do |bookmark| %>
+      <li>
+        <%= image_tag(bookmark.movie.poster_url, width: 200, height: 300) %>
+        <p><%= bookmark.movie.title %></p>
+        <p><%= bookmark.movie.overview %></p>
+        <p><%= bookmark.movie.rating %></p>
+        <p><%= bookmark.comment %></p>
+      </li>
+      <%= link_to "Delete",
+          list_bookmark_path(@list, bookmark),
+          data: { turbo_method: :delete, turbo_confirm: "Delete this bookmark?" } %>
+    <% end %>
+  </ul>
+
+  <%= link_to "Back to lists", lists_path %>
+
+</div>
