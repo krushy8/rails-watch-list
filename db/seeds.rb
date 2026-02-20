@@ -1,33 +1,38 @@
 require 'open-uri'
+require 'json'
+
 puts "Cleaning the DB...."
 Bookmark.destroy_all
 List.destroy_all
 Movie.destroy_all
 
-# CREATE MOVIES- the Le Wagon copy of the API
+
 puts "Creating movies.... \n"
-(1..5).to_a.each do |num|
+
+(1..5).each do |num|
   url = "http://tmdb.lewagon.com/movie/top_rated?page=#{num}"
   response = JSON.parse(URI.open(url).read)
 
   response['results'].each do |movie_hash|
-    puts "...creating the movie #{movie_hash['title']}..."
-    puts
-    # create an instance with the hash
+    puts "...creating #{movie_hash['title']}..."
+
     Movie.create!(
-      poster_url: "https://image.tmdb.org/t/p/w500" + movie_hash['poster_path'],
+      poster_url: "https://image.tmdb.org/t/p/w500#{movie_hash['poster_path']}",
       rating: movie_hash['vote_average'],
       title: movie_hash['title'],
       overview: movie_hash['overview']
     )
   end
 end
+
 puts "... created #{Movie.count} movies."
 
-# CREATE LISTS to add the movies to
+
 puts "Creating lists..."
 
 good_movies = List.create!(name: "Good Movies")
+bad_movies  = List.create!(name: "Bad Movies")
+
 
 good_movies.photo.attach(
   io: File.open(Rails.root.join("app/assets/images/good_movies.jpeg")),
@@ -35,17 +40,13 @@ good_movies.photo.attach(
   content_type: "image/jpeg"
 )
 
-# Attach local images to lists
-
-bad_movies  = List.create!(name: "Bad Movies")
-
 bad_movies.photo.attach(
   io: File.open(Rails.root.join("app/assets/images/bad_movies.jpg")),
   filename: "bad_movies.jpg",
   content_type: "image/jpeg"
 )
 
-# Add Movies to Lists
+
 puts "Adding movies to lists..."
 
 movies = Movie.all.sample(50)
@@ -67,7 +68,7 @@ bad_comments = [
 ]
 
 movies.each do |movie|
-  if movie.rating >= 6
+  if movie.rating >= 8
     Bookmark.create!(
       comment: good_comments.sample,
       movie: movie,
@@ -81,3 +82,7 @@ movies.each do |movie|
     )
   end
 end
+
+puts "Finished!"
+puts "Good Movies count: #{good_movies.bookmarks.count}"
+puts "Bad Movies count: #{bad_movies.bookmarks.count}"
